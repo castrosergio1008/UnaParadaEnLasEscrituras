@@ -1,6 +1,6 @@
-const CACHE = "unaparada-v1"
+const CACHE = "unaparada-v2"
 
-const PRECACHE = ["/", "/logo.png"]
+const PRECACHE = ["/", "/logo.png?v=2"]
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
