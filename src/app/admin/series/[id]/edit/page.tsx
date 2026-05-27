@@ -186,11 +186,7 @@ export default function EditSeries() {
           {series.episodes.map((ep, i) => (
             <div
               key={ep.id}
-              className={`p-5 rounded-xl border transition-colors ${
-                ep.spotifyId
-                  ? "border-zinc-700/50 bg-zinc-900/80"
-                  : "border-zinc-800/50 bg-zinc-900/40 opacity-70"
-              }`}
+              className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors"
             >
               <div className="flex items-start gap-4">
                 <span className="shrink-0 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-xs font-mono text-zinc-500 mt-0.5">

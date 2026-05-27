@@ -66,8 +66,8 @@ export default async function Home() {
               <span className="text-zinc-600 text-sm">Próximamente</span>
             )}
           </div>
-          {allEpisodes[0].spotifyId && (
-            <div className="mt-4 rounded-lg overflow-hidden bg-zinc-800/50">
+          <div className="mt-4 rounded-lg overflow-hidden">
+            {allEpisodes[0].spotifyId ? (
               <iframe
                 src={`https://open.spotify.com/embed/episode/${allEpisodes[0].spotifyId}?utm_source=generator`}
                 width="100%"
@@ -76,8 +76,15 @@ export default async function Home() {
                 loading="lazy"
                 className="block"
               />
-            </div>
-          )}
+            ) : (
+              <div className="h-[152px] rounded-lg bg-zinc-800/30 border border-dashed border-zinc-700/40 flex flex-col items-center justify-center gap-1.5">
+                <svg className="w-6 h-6 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-xs text-zinc-600">Próximamente</span>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
