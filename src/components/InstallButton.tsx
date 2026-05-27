@@ -50,7 +50,7 @@ export default function InstallButton() {
   return (
     <button
       onClick={handleInstall}
-      className="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-700 transition-colors"
+      className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition-colors"
       title={
         isIOS
           ? "Abre en Safari, pulsa Compartir y luego 'Agregar a Inicio'"
