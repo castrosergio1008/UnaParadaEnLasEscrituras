@@ -1,7 +1,8 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import Link from "next/link"
+import InstallButton from "@/components/InstallButton"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,6 +22,18 @@ export const metadata: Metadata = {
     description: "Has una parada en tu día y escucha lo que Dios quiere decirte hoy a través de las Escrituras.",
     images: ["/logo.png"],
   },
+  appleWebApp: {
+    capable: true,
+    title: "Una Parada",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    apple: "/logo.png",
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,6 +50,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/series" className="text-zinc-300 hover:text-white transition-colors">Series</Link>
               <a href={`https://open.spotify.com/show/3NlOQmbSAy21EpKirDk8o0`} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white transition-colors">Spotify</a>
             </nav>
+            <div className="ml-auto">
+              <InstallButton />
+            </div>
           </div>
         </header>
         <main className="flex-1">{children}</main>
