@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getSeries } from "@/data/podcasts"
+import Player from "@/components/Player"
 
 export const dynamic = "force-dynamic"
 
@@ -8,6 +9,14 @@ export default async function SeriesDetail({ params }: { params: Promise<{ id: s
   const { id } = await params
   const series = await getSeries(id)
   if (!series) notFound()
+
+  const episodes = series.episodes
+    .toSorted((a, b) => a.date.localeCompare(b.date))
+    .map((ep) => ({
+      ...ep,
+      seriesTitle: series.title,
+      seriesId: series.id,
+    }))
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -18,15 +27,19 @@ export default async function SeriesDetail({ params }: { params: Promise<{ id: s
       <h1 className="text-3xl font-bold text-white mb-2">{series.title}</h1>
       <p className="text-zinc-400 mb-8">{series.description}</p>
 
+      <div className="mb-10">
+        <Player episodes={episodes} />
+      </div>
+
       <div className="space-y-4">
-        {series.episodes.map((ep, i) => (
+        {episodes.map((ep, i) => (
           <article
             key={ep.id}
             className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 transition-colors"
           >
             <div className="flex items-start justify-between gap-4 mb-3">
               <h2 className="text-lg font-semibold text-white">
-                <span className="text-zinc-500 mr-2">#{series.episodes.length - i}</span>
+                <span className="text-zinc-500 mr-2">#{i + 1}</span>
                 {ep.title}
               </h2>
               <span className="shrink-0 text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded">
