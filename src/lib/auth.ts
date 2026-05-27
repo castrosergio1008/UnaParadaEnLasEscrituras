@@ -20,7 +20,7 @@ function fromBase64url(str: string): string {
 export function createToken(email: string): string {
   const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
   const now = Math.floor(Date.now() / 1000)
-  const payload: TokenPayload = { email, role: 'admin', iat: now, exp: now + 86400 }
+  const payload: TokenPayload = { email, role: 'admin', iat: now, exp: now + 3600 }
   const body = base64url(JSON.stringify(payload))
   const signature = createHmac('sha256', SECRET)
     .update(`${header}.${body}`)
