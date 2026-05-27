@@ -53,18 +53,30 @@ export default async function Home() {
           <p className="text-zinc-400 text-sm mb-3 line-clamp-2">{allEpisodes[0].description}</p>
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-600">{allEpisodes[0].seriesTitle} &middot; {allEpisodes[0].date}</span>
-            {allEpisodes[0].spotifyId ? (
-              <a
-                href={`https://open.spotify.com/episode/${allEpisodes[0].spotifyId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
-              >
-                Escuchar en Spotify &rarr;
-              </a>
-            ) : (
-              <span className="text-zinc-600 text-sm">Próximamente</span>
-            )}
+            <div className="flex items-center gap-3">
+              {allEpisodes[0].spotifyId ? (
+                <>
+                  <a
+                    href={`https://open.spotify.com/episode/${allEpisodes[0].spotifyId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
+                  >
+                    Escuchar en Spotify &rarr;
+                  </a>
+                  <a
+                    href="https://open.spotify.com/show/3NlOQmbSAy21EpKirDk8o0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-3 py-1 rounded-full transition-colors"
+                  >
+                    Seguir en Spotify
+                  </a>
+                </>
+              ) : (
+                <span className="text-zinc-600 text-sm">Próximamente</span>
+              )}
+            </div>
           </div>
           <div className="mt-4 rounded-lg overflow-hidden">
             {allEpisodes[0].spotifyId ? (

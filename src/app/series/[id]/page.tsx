@@ -49,18 +49,30 @@ export default async function SeriesDetail({ params }: { params: Promise<{ id: s
             <p className="text-zinc-400 text-sm mb-4">{ep.description}</p>
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-600">{ep.date}</span>
-              {ep.spotifyId ? (
-                <a
-                  href={`https://open.spotify.com/episode/${ep.spotifyId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
-                >
-                  Escuchar en Spotify &rarr;
-                </a>
-              ) : (
-                <span className="text-zinc-600 text-sm">Próximamente</span>
-              )}
+              <div className="flex items-center gap-3">
+                {ep.spotifyId ? (
+                  <>
+                    <a
+                      href={`https://open.spotify.com/episode/${ep.spotifyId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
+                    >
+                      Escuchar en Spotify &rarr;
+                    </a>
+                    <a
+                      href="https://open.spotify.com/show/3NlOQmbSAy21EpKirDk8o0"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 px-3 py-1 rounded-full transition-colors"
+                    >
+                      Seguir en Spotify
+                    </a>
+                  </>
+                ) : (
+                  <span className="text-zinc-600 text-sm">Próximamente</span>
+                )}
+              </div>
             </div>
             {ep.spotifyId ? (
               <div className="mt-4 rounded-lg overflow-hidden bg-zinc-800/50">
