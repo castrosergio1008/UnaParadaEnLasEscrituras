@@ -4,7 +4,7 @@ import { authenticate } from "@/lib/auth"
 export async function GET() {
   try {
     const { seriesList } = await readData()
-    return Response.json(seriesList)
+    return Response.json(seriesList.toSorted((a, b) => b.title.localeCompare(a.title)))
   } catch {
     return Response.json({ error: "Error al leer los datos" }, { status: 500 })
   }

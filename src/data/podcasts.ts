@@ -15,5 +15,5 @@ export async function getAllEpisodes(): Promise<Episode[]> {
 
 export async function getSeriesList(): Promise<Series[]> {
   const { seriesList } = await readData()
-  return seriesList
+  return seriesList.toSorted((a, b) => b.title.localeCompare(a.title))
 }
