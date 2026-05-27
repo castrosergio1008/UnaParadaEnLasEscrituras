@@ -1,5 +1,10 @@
 import Link from "next/link"
 import { seriesList } from "@/data/podcasts"
+import Player from "@/components/Player"
+
+const allEpisodes = seriesList
+  .flatMap((s) => s.episodes.map((e) => ({ ...e, seriesTitle: s.title, seriesId: s.id })))
+  .sort((a, b) => b.date.localeCompare(a.date))
 
 export default function Home() {
   const totalEpisodes = seriesList.reduce((acc, s) => acc + s.episodes.length, 0)
@@ -32,17 +37,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mb-12">
-        <div className="rounded-xl overflow-hidden bg-zinc-900/50 border border-zinc-800 max-w-2xl">
-          <iframe
-            src={`https://open.spotify.com/embed/show/3NlOQmbSAy21EpKirDk8o0?utm_source=generator`}
-            width="100%"
-            height="232"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            className="block"
-          />
-        </div>
+      <section className="mb-16 max-w-2xl">
+        <h2 className="text-2xl font-bold text-white mb-6">Reproductor</h2>
+        <Player episodes={allEpisodes} />
       </section>
 
       <section>
