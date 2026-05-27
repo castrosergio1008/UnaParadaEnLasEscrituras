@@ -2,9 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { seriesList } from "@/data/podcasts"
 
-export function generateStaticParams() {
-  return seriesList.map((s) => ({ id: s.id }))
-}
+export const dynamic = "force-dynamic"
 
 export default async function SeriesDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

@@ -2,11 +2,13 @@ import Link from "next/link"
 import { seriesList } from "@/data/podcasts"
 import Player from "@/components/Player"
 
-const allEpisodes = seriesList
-  .flatMap((s) => s.episodes.map((e) => ({ ...e, seriesTitle: s.title, seriesId: s.id })))
-  .sort((a, b) => b.date.localeCompare(a.date))
+export const dynamic = "force-dynamic"
 
 export default function Home() {
+  const allEpisodes = seriesList
+    .flatMap((s) => s.episodes.map((e) => ({ ...e, seriesTitle: s.title, seriesId: s.id })))
+    .sort((a, b) => b.date.localeCompare(a.date))
+
   const totalEpisodes = seriesList.reduce((acc, s) => acc + s.episodes.length, 0)
 
   return (

@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { seriesList } from "@/data/podcasts"
 
+export const dynamic = "force-dynamic"
+
 export default function SeriesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
