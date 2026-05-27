@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <section className="flex flex-col md:flex-row items-center gap-8 mb-16">
-        <img src="/logo.png" alt="Una Parada en las Escrituras" className="w-40 h-40 md:w-52 md:h-52 rounded-2xl shadow-lg shadow-emerald-900/30" />
+        <img src="/logo.png?v=2" alt="Una Parada en las Escrituras" className="w-40 h-40 md:w-52 md:h-52 rounded-2xl shadow-lg shadow-emerald-900/30" />
         <div>
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
             Una Parada en las Escrituras

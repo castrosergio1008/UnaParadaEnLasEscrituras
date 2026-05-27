@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Una Parada en las Escrituras",
     description: "Has una parada en tu día y escucha lo que Dios quiere decirte hoy a través de las Escrituras.",
-    images: ["/logo.png"],
+    images: ["/logo.png?v=2"],
   },
   appleWebApp: {
     capable: true,
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   icons: {
-    apple: "/logo.png",
+    apple: "/logo.png?v=2",
   },
 }
 
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="border-b border-zinc-800">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
             <Link href="/" className="shrink-0">
-              <img src="/logo.png" alt="Una Parada en las Escrituras" className="w-12 h-12 rounded-lg object-cover" />
+              <img src="/logo.png?v=2" alt="Una Parada en las Escrituras" className="w-12 h-12 rounded-lg object-cover" />
             </Link>
             <nav className="flex items-center gap-6 text-sm font-medium">
               <AuthNav />
