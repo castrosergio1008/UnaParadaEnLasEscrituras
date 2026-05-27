@@ -66,6 +66,18 @@ export default async function Home() {
               <span className="text-zinc-600 text-sm">Próximamente</span>
             )}
           </div>
+          {allEpisodes[0].spotifyId && (
+            <div className="mt-4 rounded-lg overflow-hidden bg-zinc-800/50">
+              <iframe
+                src={`https://open.spotify.com/embed/episode/${allEpisodes[0].spotifyId}?utm_source=generator`}
+                width="100%"
+                height="152"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="block"
+              />
+            </div>
+          )}
         </div>
       </section>
 

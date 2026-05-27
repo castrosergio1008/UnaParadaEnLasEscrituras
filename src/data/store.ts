@@ -2,6 +2,7 @@ import { Redis } from "@upstash/redis"
 import fs from "fs"
 import path from "path"
 import type { Series, Episode } from "./types"
+import seedData from "./podcasts.json"
 
 const KV_KEY = "podcast-data"
 const PROJECT_DATA_PATH = path.join(process.cwd(), "src", "data", "podcasts.json")
@@ -18,7 +19,11 @@ if (useRedis) {
 
 function readFileSync(): { seriesList: Series[] } {
   const p = fs.existsSync(TMP_DATA_PATH) ? TMP_DATA_PATH : PROJECT_DATA_PATH
-  return JSON.parse(fs.readFileSync(p, "utf-8"))
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf-8"))
+  } catch {
+    return seedData as { seriesList: Series[] }
+  }
 }
 
 function writeFileSync(data: { seriesList: Series[] }): void {
