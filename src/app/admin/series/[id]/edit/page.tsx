@@ -33,6 +33,19 @@ export default function EditSeries() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
+  const [spotifyLink, setSpotifyLink] = useState("")
+  const [fetchingSpotify, setFetchingSpotify] = useState(false)
+  const [spotifyData, setSpotifyData] = useState<{
+    spotifyId: string
+    title: string
+    description: string
+    duration: string
+    date: string
+    image: string | null
+  } | null>(null)
+  const [spotifyError, setSpotifyError] = useState("")
+  const [addingEpisode, setAddingEpisode] = useState(false)
+
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/admin/login")
@@ -89,37 +102,57 @@ export default function EditSeries() {
     }
   }
 
-  async function handleAddEpisode(e: FormEvent) {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement
-    const data = new FormData(form)
-    const title = data.get("ep-title") as string
-    const description = data.get("ep-description") as string
-    const spotifyLink = data.get("ep-spotify-link") as string
-    const duration = data.get("ep-duration") as string
-    const date = data.get("ep-date") as string
+  async function handleFetchSpotify() {
+    const match = spotifyLink.trim().match(/open\.spotify\.com\/episode\/([a-zA-Z0-9]+)/)
+    if (!match) {
+      setSpotifyError("Link de Spotify inválido")
+      return
+    }
+    setSpotifyError("")
+    setFetchingSpotify(true)
+    setSpotifyData(null)
 
-    if (!title) return
+    const res = await fetch(`/api/episodes/fetch-spotify?id=${match[1]}`)
+    if (!res.ok) {
+      const err = await res.json()
+      setSpotifyError(err.error || "Error al obtener datos de Spotify")
+      setFetchingSpotify(false)
+      return
+    }
 
-    const spotifyId = spotifyLink
-      ? spotifyLink.trim().match(/open\.spotify\.com\/episode\/([a-zA-Z0-9]+)/)?.[1] || ""
-      : ""
+    const data = await res.json()
+    setSpotifyData(data)
+    setFetchingSpotify(false)
+  }
+
+  async function handleAddEpisode() {
+    if (!spotifyData) return
+    setAddingEpisode(true)
 
     const res = await fetch(`/api/series/${seriesId}/episodes`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ title, description, spotifyId, duration, date }),
+      body: JSON.stringify({
+        title: spotifyData.title,
+        description: spotifyData.description,
+        spotifyId: spotifyData.spotifyId,
+        duration: spotifyData.duration,
+        date: spotifyData.date,
+      }),
     })
 
     if (!res.ok) {
       const errData = await res.json()
       alert(errData.error || "Error al crear episodio")
+      setAddingEpisode(false)
       return
     }
 
     const episode = await res.json()
     setSeries((prev) => (prev ? { ...prev, episodes: [...prev.episodes, episode] } : prev))
-    form.reset()
+    setSpotifyLink("")
+    setSpotifyData(null)
+    setAddingEpisode(false)
   }
 
   if (loading) {
@@ -243,56 +276,62 @@ export default function EditSeries() {
 
         <div className="border-t border-zinc-800 pt-8">
           <h3 className="text-xl font-bold text-white mb-4">Añadir Episodio</h3>
-          <form onSubmit={handleAddEpisode} className="space-y-4">
+
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Título</label>
-              <input
-                name="ep-title"
-                required
-                className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-zinc-400 mb-1">Descripción</label>
-              <textarea
-                name="ep-description"
-                rows={2}
-                className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-sm text-zinc-400 mb-1">Link del episodio (Spotify)</label>
+              <label className="block text-sm text-zinc-400 mb-1">Link del episodio (Spotify)</label>
+              <div className="flex gap-2">
                 <input
-                  name="ep-spotify-link"
+                  value={spotifyLink}
+                  onChange={(e) => {
+                    setSpotifyLink(e.target.value)
+                    setSpotifyError("")
+                  }}
                   placeholder="https://open.spotify.com/episode/..."
-                  className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+                  className="flex-1 px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={handleFetchSpotify}
+                  disabled={fetchingSpotify || !spotifyLink.trim()}
+                  className="bg-zinc-700 hover:bg-zinc-600 disabled:opacity-50 text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm shrink-0"
+                >
+                  {fetchingSpotify ? "Obteniendo..." : "Obtener datos"}
+                </button>
               </div>
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1">Duración</label>
-                <input
-                  name="ep-duration"
-                  placeholder="ej: 10 min"
-                  className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1">Fecha</label>
-                <input
-                  type="date"
-                  name="ep-date"
-                  className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
+              {spotifyError && <p className="text-red-400 text-xs mt-1">{spotifyError}</p>}
             </div>
-            <button
-              type="submit"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-lg transition-colors text-sm"
-            >
-              Añadir Episodio
-            </button>
-          </form>
+
+            {spotifyData && (
+              <div className="p-4 rounded-xl border border-emerald-700/40 bg-zinc-900/60 space-y-3">
+                <div className="flex items-start gap-4">
+                  {spotifyData.image && (
+                    <img
+                      src={spotifyData.image}
+                      alt={spotifyData.title}
+                      className="w-16 h-16 rounded-lg object-cover shrink-0"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-white font-semibold text-base leading-snug">{spotifyData.title}</h4>
+                    <p className="text-zinc-400 text-sm mt-1 line-clamp-2">{spotifyData.description}</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-zinc-500">
+                      <span>{spotifyData.duration}</span>
+                      <span>{spotifyData.date}</span>
+                      <span className="text-emerald-400">Spotify ID: {spotifyData.spotifyId}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleAddEpisode}
+                  disabled={addingEpisode}
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg transition-colors text-sm"
+                >
+                  {addingEpisode ? "Añadiendo..." : "Añadir Episodio"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
