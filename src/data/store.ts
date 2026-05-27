@@ -2,15 +2,36 @@ import fs from 'fs'
 import path from 'path'
 import type { Series, Episode } from './types'
 
-const dataPath = path.join(process.cwd(), 'src', 'data', 'podcasts.json')
+const PROJECT_DATA_PATH = path.join(process.cwd(), 'src', 'data', 'podcasts.json')
+const TMP_DATA_PATH = '/tmp/podcasts.json'
+
+function getWritablePath(): string {
+  try {
+    fs.accessSync(path.dirname(PROJECT_DATA_PATH), fs.constants.W_OK)
+    return PROJECT_DATA_PATH
+  } catch {
+    return TMP_DATA_PATH
+  }
+}
+
+function ensureTmpSeed(): void {
+  if (!fs.existsSync(TMP_DATA_PATH)) {
+    fs.copyFileSync(PROJECT_DATA_PATH, TMP_DATA_PATH)
+  }
+}
+
+const writablePath = getWritablePath()
+const isTmp = writablePath === TMP_DATA_PATH
 
 export function readData(): { seriesList: Series[] } {
-  const raw = fs.readFileSync(dataPath, 'utf-8')
+  if (isTmp) ensureTmpSeed()
+  const raw = fs.readFileSync(isTmp ? TMP_DATA_PATH : PROJECT_DATA_PATH, 'utf-8')
   return JSON.parse(raw)
 }
 
 export function writeData(data: { seriesList: Series[] }): void {
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8')
+  if (isTmp) ensureTmpSeed()
+  fs.writeFileSync(writablePath, JSON.stringify(data, null, 2), 'utf-8')
 }
 
 export function getSeries(id: string): Series | undefined {
