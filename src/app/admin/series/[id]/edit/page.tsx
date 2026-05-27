@@ -182,25 +182,64 @@ export default function EditSeries() {
           Episodios ({series.episodes.length})
         </h2>
 
-        <div className="space-y-3 mb-8">
-          {series.episodes.map((ep) => (
+        <div className="space-y-4 mb-8">
+          {series.episodes.map((ep, i) => (
             <div
               key={ep.id}
-              className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50"
+              className={`p-5 rounded-xl border transition-colors ${
+                ep.spotifyId
+                  ? "border-zinc-700/50 bg-zinc-900/80"
+                  : "border-zinc-800/50 bg-zinc-900/40 opacity-70"
+              }`}
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <span className="shrink-0 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-xs font-mono text-zinc-500 mt-0.5">
+                  {String(series.episodes.length - i).padStart(2, "0")}
+                </span>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-white font-medium">{ep.title}</h3>
-                  <p className="text-zinc-500 text-xs mt-1">
-                    {ep.duration} &middot; {ep.date} &middot; {ep.spotifyId ? "Publicado" : "Próximamente"}
-                  </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-white font-semibold text-base leading-snug">{ep.title}</h3>
+                    <button
+                      onClick={() => handleDeleteEpisode(ep.id)}
+                      className="shrink-0 p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-900/30 transition-colors"
+                      title="Eliminar episodio"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-zinc-400 text-sm mt-2 line-clamp-2">{ep.description}</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs">
+                    {ep.spotifyId ? (
+                      <span className="inline-flex items-center gap-1 text-emerald-400">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.72.48-1.08.24-2.88-1.8-6.48-2.16-10.68-1.2-.36.12-.72-.12-.84-.48-.12-.36.12-.72.48-.84 4.56-1.08 8.52-.6 11.76 1.2.36.24.48.72.24 1.08zm1.44-3.24c-.3.42-.84.6-1.26.3-3.24-2.04-8.16-2.64-11.88-1.44-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.32-1.32 9.72-.72 13.44 1.56.42.24.6.84.24 1.32zm.12-3.48c-3.84-2.28-10.08-2.52-13.68-1.44-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.2-1.2 10.92-.96 15.36 1.68.48.24.6.84.36 1.32-.24.36-.84.48-1.32.18z"/>
+                        </svg>
+                        Publicado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-zinc-500">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Próximamente
+                      </span>
+                    )}
+                    <span className="text-zinc-500">{ep.duration}</span>
+                    <span className="text-zinc-500">{ep.date}</span>
+                    {ep.spotifyId && (
+                      <a
+                        href={`https://open.spotify.com/episode/${ep.spotifyId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-500 hover:text-emerald-400 transition-colors"
+                      >
+                        Spotify &nearr;
+                      </a>
+                    )}
+                  </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteEpisode(ep.id)}
-                  className="text-sm px-3 py-1.5 rounded-lg bg-red-900/50 hover:bg-red-800/50 text-red-400 transition-colors shrink-0"
-                >
-                  Eliminar
-                </button>
               </div>
             </div>
           ))}
