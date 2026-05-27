@@ -1,10 +1,6 @@
 import Link from "next/link"
 import { seriesList } from "@/data/podcasts"
 
-const allEpisodes = seriesList
-  .flatMap((s) => s.episodes.map((e) => ({ ...e, seriesTitle: s.title, seriesId: s.id })))
-  .sort((a, b) => b.date.localeCompare(a.date))
-
 export default function Home() {
   const totalEpisodes = seriesList.reduce((acc, s) => acc + s.episodes.length, 0)
 
@@ -66,61 +62,6 @@ export default function Home() {
                 {series.episodes.length} episodios &rarr;
               </span>
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-2xl font-bold text-white mb-8">Todos los episodios</h2>
-        <div className="space-y-4">
-          {allEpisodes.map((ep, i) => (
-            <article
-              key={`${ep.seriesId}-${ep.id}`}
-              className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{ep.title}</h3>
-                  <Link
-                    href={`/series/${ep.seriesId}`}
-                    className="text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
-                  >
-                    {ep.seriesTitle}
-                  </Link>
-                </div>
-                <span className="shrink-0 text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded">
-                  {ep.duration}
-                </span>
-              </div>
-              <p className="text-zinc-400 text-sm mb-4">{ep.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-600">{ep.date}</span>
-                {ep.spotifyId ? (
-                  <a
-                    href={`https://open.spotify.com/episode/${ep.spotifyId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
-                  >
-                    Escuchar en Spotify &rarr;
-                  </a>
-                ) : (
-                  <span className="text-zinc-600 text-sm">Próximamente</span>
-                )}
-              </div>
-              {ep.spotifyId && (
-                <div className="mt-4 rounded-lg overflow-hidden bg-zinc-800/50">
-                  <iframe
-                    src={`https://open.spotify.com/embed/episode/${ep.spotifyId}?utm_source=generator`}
-                    width="100%"
-                    height="152"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    className="block"
-                  />
-                </div>
-              )}
-            </article>
           ))}
         </div>
       </section>
