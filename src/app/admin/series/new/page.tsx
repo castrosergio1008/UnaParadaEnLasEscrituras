@@ -29,20 +29,25 @@ export default function NewSeries() {
     setLoading(true)
     setError("")
 
-    const res = await fetch("/api/series", {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ id, title, description }),
-    })
+    try {
+      const res = await fetch("/api/series", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ id, title, description }),
+      })
 
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error || "Error al crear la serie")
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({ error: "Error del servidor" }))
+        setError(data.error || "Error al crear la serie")
+        setLoading(false)
+        return
+      }
+
+      router.push("/admin")
+    } catch (err) {
+      setError("Error de conexión con el servidor")
       setLoading(false)
-      return
     }
-
-    router.push("/admin")
   }
 
   return (

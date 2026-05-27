@@ -5,43 +5,55 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  const series = getSeries(id)
-  if (!series) {
-    return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+  try {
+    const { id } = await params
+    const series = getSeries(id)
+    if (!series) {
+      return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+    }
+    return Response.json(series)
+  } catch {
+    return Response.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-  return Response.json(series)
 }
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = authenticate(request)
-  if (auth instanceof Response) return auth
+  try {
+    const auth = authenticate(request)
+    if (auth instanceof Response) return auth
 
-  const { id } = await params
-  const body = await request.json()
-  const { title, description } = body
+    const { id } = await params
+    const body = await request.json()
+    const { title, description } = body
 
-  const updated = updateSeries(id, { title, description })
-  if (!updated) {
-    return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+    const updated = updateSeries(id, { title, description })
+    if (!updated) {
+      return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+    }
+    return Response.json(updated)
+  } catch {
+    return Response.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-  return Response.json(updated)
 }
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = authenticate(request)
-  if (auth instanceof Response) return auth
+  try {
+    const auth = authenticate(request)
+    if (auth instanceof Response) return auth
 
-  const { id } = await params
-  const deleted = deleteSeries(id)
-  if (!deleted) {
-    return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+    const { id } = await params
+    const deleted = deleteSeries(id)
+    if (!deleted) {
+      return Response.json({ error: "Serie no encontrada" }, { status: 404 })
+    }
+    return Response.json({ success: true })
+  } catch {
+    return Response.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-  return Response.json({ success: true })
 }
