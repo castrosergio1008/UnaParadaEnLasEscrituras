@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import Link from "next/link"
 import InstallButton from "@/components/InstallButton"
+import AuthNav from "@/components/AuthNav"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,9 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <img src="/logo.png" alt="Una Parada en las Escrituras" className="w-12 h-12 rounded-lg object-cover" />
             </Link>
             <nav className="flex items-center gap-6 text-sm font-medium">
-              <Link href="/" className="text-zinc-300 hover:text-white transition-colors">Inicio</Link>
-              <Link href="/series" className="text-zinc-300 hover:text-white transition-colors">Series</Link>
-              <a href={`https://open.spotify.com/show/3NlOQmbSAy21EpKirDk8o0`} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white transition-colors">Spotify</a>
+              <AuthNav />
             </nav>
             <div className="ml-auto">
               <InstallButton />
