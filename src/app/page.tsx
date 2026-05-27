@@ -38,8 +38,31 @@ export default function Home() {
       </section>
 
       <section className="mb-16 max-w-2xl">
-        <h2 className="text-2xl font-bold text-white mb-6">Reproductor</h2>
-        <Player episodes={allEpisodes} />
+        <h2 className="text-xl font-bold text-white mb-4">Último episodio</h2>
+        <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50">
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h3 className="text-lg font-semibold text-white">{allEpisodes[0].title}</h3>
+            <span className="shrink-0 text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded">
+              {allEpisodes[0].duration}
+            </span>
+          </div>
+          <p className="text-zinc-400 text-sm mb-3 line-clamp-2">{allEpisodes[0].description}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-zinc-600">{allEpisodes[0].seriesTitle} &middot; {allEpisodes[0].date}</span>
+            {allEpisodes[0].spotifyId ? (
+              <a
+                href={`https://open.spotify.com/episode/${allEpisodes[0].spotifyId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors"
+              >
+                Escuchar en Spotify &rarr;
+              </a>
+            ) : (
+              <span className="text-zinc-600 text-sm">Próximamente</span>
+            )}
+          </div>
+        </div>
       </section>
 
       <section>
@@ -61,6 +84,11 @@ export default function Home() {
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="mb-16 max-w-2xl">
+        <h2 className="text-2xl font-bold text-white mb-6">Reproductor</h2>
+        <Player episodes={allEpisodes} />
       </section>
     </div>
   )
