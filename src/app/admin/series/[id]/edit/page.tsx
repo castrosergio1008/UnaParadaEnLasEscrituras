@@ -95,11 +95,15 @@ export default function EditSeries() {
     const data = new FormData(form)
     const title = data.get("ep-title") as string
     const description = data.get("ep-description") as string
-    const spotifyId = data.get("ep-spotifyId") as string
+    const spotifyLink = data.get("ep-spotify-link") as string
     const duration = data.get("ep-duration") as string
     const date = data.get("ep-date") as string
 
     if (!title) return
+
+    const spotifyId = spotifyLink
+      ? spotifyLink.trim().match(/open\.spotify\.com\/episode\/([a-zA-Z0-9]+)/)?.[1] || ""
+      : ""
 
     const res = await fetch(`/api/series/${seriesId}/episodes`, {
       method: "POST",
@@ -222,11 +226,12 @@ export default function EditSeries() {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm text-zinc-400 mb-1">Spotify ID</label>
+              <div className="md:col-span-2">
+                <label className="block text-sm text-zinc-400 mb-1">Link del episodio (Spotify)</label>
                 <input
-                  name="ep-spotifyId"
-                  className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                  name="ep-spotify-link"
+                  placeholder="https://open.spotify.com/episode/..."
+                  className="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                 />
               </div>
               <div>
