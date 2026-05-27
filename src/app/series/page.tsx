@@ -16,7 +16,7 @@ export default async function SeriesPage() {
           <Link
             key={series.id}
             href={`/series/${series.id}`}
-            className="group block p-6 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 hover:border-emerald-700/50 transition-all"
+            className="group block p-6 rounded-xl border border-zinc-800 series-card hover:border-emerald-700/50 transition-all"
           >
             <h2 className="text-xl font-semibold text-white group-hover:text-emerald-400 transition-colors mb-2">
               {series.title}

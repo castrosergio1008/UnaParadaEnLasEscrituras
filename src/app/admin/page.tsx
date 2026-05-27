@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         {seriesList.map((series) => (
           <div
             key={series.id}
-            className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50"
+            className="p-5 rounded-xl border border-zinc-800 series-card"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
