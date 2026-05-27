@@ -13,7 +13,7 @@ export async function PUT(
     const body = await request.json()
     const { title, description, spotifyId, duration, date } = body
 
-    const updated = updateEpisode(id, episodeId, {
+    const updated = await updateEpisode(id, episodeId, {
       title,
       description,
       spotifyId,
@@ -38,7 +38,7 @@ export async function DELETE(
     if (auth instanceof Response) return auth
 
     const { id, episodeId } = await params
-    const deleted = deleteEpisode(id, episodeId)
+    const deleted = await deleteEpisode(id, episodeId)
     if (!deleted) {
       return Response.json({ error: "Episodio no encontrado" }, { status: 404 })
     }

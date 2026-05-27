@@ -1,12 +1,12 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { seriesList } from "@/data/podcasts"
+import { getSeries } from "@/data/podcasts"
 
 export const dynamic = "force-dynamic"
 
 export default async function SeriesDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const series = seriesList.find((s) => s.id === id)
+  const series = await getSeries(id)
   if (!series) notFound()
 
   return (

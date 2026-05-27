@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const series = getSeries(id)
+    const series = await getSeries(id)
     if (!series) {
       return Response.json({ error: "Serie no encontrada" }, { status: 404 })
     }
@@ -29,7 +29,7 @@ export async function PUT(
     const body = await request.json()
     const { title, description } = body
 
-    const updated = updateSeries(id, { title, description })
+    const updated = await updateSeries(id, { title, description })
     if (!updated) {
       return Response.json({ error: "Serie no encontrada" }, { status: 404 })
     }
@@ -48,7 +48,7 @@ export async function DELETE(
     if (auth instanceof Response) return auth
 
     const { id } = await params
-    const deleted = deleteSeries(id)
+    const deleted = await deleteSeries(id)
     if (!deleted) {
       return Response.json({ error: "Serie no encontrada" }, { status: 404 })
     }

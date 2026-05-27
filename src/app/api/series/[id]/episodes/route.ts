@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const series = getSeries(id)
+    const series = await getSeries(id)
     if (!series) {
       return Response.json({ error: "Serie no encontrada" }, { status: 404 })
     }
@@ -27,7 +27,7 @@ export async function POST(
     if (auth instanceof Response) return auth
 
     const { id } = await params
-    const series = getSeries(id)
+    const series = await getSeries(id)
     if (!series) {
       return Response.json({ error: "Serie no encontrada" }, { status: 404 })
     }
@@ -53,7 +53,7 @@ export async function POST(
       date: date || new Date().toISOString().split("T")[0],
     }
 
-    addEpisode(id, episode)
+    await addEpisode(id, episode)
     return Response.json(episode, { status: 201 })
   } catch {
     return Response.json({ error: "Error interno del servidor" }, { status: 500 })

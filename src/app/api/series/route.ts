@@ -3,7 +3,7 @@ import { authenticate } from "@/lib/auth"
 
 export async function GET() {
   try {
-    const { seriesList } = readData()
+    const { seriesList } = await readData()
     return Response.json(seriesList)
   } catch {
     return Response.json({ error: "Error al leer los datos" }, { status: 500 })
@@ -22,16 +22,15 @@ export async function POST(request: Request) {
       return Response.json({ error: "id y title son requeridos" }, { status: 400 })
     }
 
-    const { seriesList } = readData()
+    const { seriesList } = await readData()
     if (seriesList.some((s) => s.id === id)) {
       return Response.json({ error: "Ya existe una serie con ese ID" }, { status: 409 })
     }
 
     const series = { id, title, description: description || "", episodes: [] }
-    addSeries(series)
+    await addSeries(series)
     return Response.json(series, { status: 201 })
-  } catch (err) {
-    console.error("[series POST] error:", err)
+  } catch {
     return Response.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 }

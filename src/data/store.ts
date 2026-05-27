@@ -1,95 +1,121 @@
-import fs from 'fs'
-import path from 'path'
-import type { Series, Episode } from './types'
+import { Redis } from "@upstash/redis"
+import fs from "fs"
+import path from "path"
+import type { Series, Episode } from "./types"
 
-const PROJECT_DATA_PATH = path.join(process.cwd(), 'src', 'data', 'podcasts.json')
-const TMP_DATA_PATH = '/tmp/podcasts.json'
+const KV_KEY = "podcast-data"
+const PROJECT_DATA_PATH = path.join(process.cwd(), "src", "data", "podcasts.json")
+const TMP_DATA_PATH = "/tmp/podcasts.json"
 
-function getWritablePath(): string {
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || ""
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || ""
+const useRedis = !!(redisUrl && redisToken)
+
+let redis: Redis | null = null
+if (useRedis) {
+  redis = new Redis({ url: redisUrl, token: redisToken })
+}
+
+function readFileSync(): { seriesList: Series[] } {
+  const p = fs.existsSync(TMP_DATA_PATH) ? TMP_DATA_PATH : PROJECT_DATA_PATH
+  return JSON.parse(fs.readFileSync(p, "utf-8"))
+}
+
+function writeFileSync(data: { seriesList: Series[] }): void {
   try {
-    fs.accessSync(path.dirname(PROJECT_DATA_PATH), fs.constants.W_OK)
-    return PROJECT_DATA_PATH
+    fs.writeFileSync(PROJECT_DATA_PATH, JSON.stringify(data, null, 2), "utf-8")
   } catch {
-    return TMP_DATA_PATH
+    fs.writeFileSync(TMP_DATA_PATH, JSON.stringify(data, null, 2), "utf-8")
   }
 }
 
-function ensureTmpSeed(): void {
-  if (!fs.existsSync(TMP_DATA_PATH)) {
-    fs.copyFileSync(PROJECT_DATA_PATH, TMP_DATA_PATH)
+export async function readData(): Promise<{ seriesList: Series[] }> {
+  if (redis) {
+    const cached = await redis.get<{ seriesList: Series[] }>(KV_KEY)
+    if (cached) return cached
+    const fileData = readFileSync()
+    await redis.set(KV_KEY, fileData)
+    return fileData
   }
+  return readFileSync()
 }
 
-const writablePath = getWritablePath()
-const isTmp = writablePath === TMP_DATA_PATH
-
-export function readData(): { seriesList: Series[] } {
-  if (isTmp) ensureTmpSeed()
-  const raw = fs.readFileSync(isTmp ? TMP_DATA_PATH : PROJECT_DATA_PATH, 'utf-8')
-  return JSON.parse(raw)
+export async function writeData(data: { seriesList: Series[] }): Promise<void> {
+  if (redis) {
+    await redis.set(KV_KEY, data)
+  }
+  writeFileSync(data)
 }
 
-export function writeData(data: { seriesList: Series[] }): void {
-  if (isTmp) ensureTmpSeed()
-  fs.writeFileSync(writablePath, JSON.stringify(data, null, 2), 'utf-8')
-}
-
-export function getSeries(id: string): Series | undefined {
-  const { seriesList } = readData()
+export async function getSeries(id: string): Promise<Series | undefined> {
+  const { seriesList } = await readData()
   return seriesList.find((s) => s.id === id)
 }
 
-export function addSeries(series: Series): void {
-  const data = readData()
+export async function addSeries(series: Series): Promise<void> {
+  const data = await readData()
   data.seriesList.push(series)
-  writeData(data)
+  await writeData(data)
 }
 
-export function updateSeries(id: string, updates: Partial<Omit<Series, 'id' | 'episodes'>>): Series | undefined {
-  const data = readData()
+export async function updateSeries(
+  id: string,
+  updates: Partial<Omit<Series, "id" | "episodes">>,
+): Promise<Series | undefined> {
+  const data = await readData()
   const idx = data.seriesList.findIndex((s) => s.id === id)
   if (idx === -1) return undefined
   data.seriesList[idx] = { ...data.seriesList[idx], ...updates }
-  writeData(data)
+  await writeData(data)
   return data.seriesList[idx]
 }
 
-export function deleteSeries(id: string): boolean {
-  const data = readData()
+export async function deleteSeries(id: string): Promise<boolean> {
+  const data = await readData()
   const idx = data.seriesList.findIndex((s) => s.id === id)
   if (idx === -1) return false
   data.seriesList.splice(idx, 1)
-  writeData(data)
+  await writeData(data)
   return true
 }
 
-export function addEpisode(seriesId: string, episode: Episode): Episode | undefined {
-  const data = readData()
+export async function addEpisode(
+  seriesId: string,
+  episode: Episode,
+): Promise<Episode | undefined> {
+  const data = await readData()
   const series = data.seriesList.find((s) => s.id === seriesId)
   if (!series) return undefined
   series.episodes.push(episode)
-  writeData(data)
+  await writeData(data)
   return episode
 }
 
-export function updateEpisode(seriesId: string, episodeId: string, updates: Partial<Episode>): Episode | undefined {
-  const data = readData()
+export async function updateEpisode(
+  seriesId: string,
+  episodeId: string,
+  updates: Partial<Episode>,
+): Promise<Episode | undefined> {
+  const data = await readData()
   const series = data.seriesList.find((s) => s.id === seriesId)
   if (!series) return undefined
   const idx = series.episodes.findIndex((ep) => ep.id === episodeId)
   if (idx === -1) return undefined
   series.episodes[idx] = { ...series.episodes[idx], ...updates }
-  writeData(data)
+  await writeData(data)
   return series.episodes[idx]
 }
 
-export function deleteEpisode(seriesId: string, episodeId: string): boolean {
-  const data = readData()
+export async function deleteEpisode(
+  seriesId: string,
+  episodeId: string,
+): Promise<boolean> {
+  const data = await readData()
   const series = data.seriesList.find((s) => s.id === seriesId)
   if (!series) return false
   const idx = series.episodes.findIndex((ep) => ep.id === episodeId)
   if (idx === -1) return false
   series.episodes.splice(idx, 1)
-  writeData(data)
+  await writeData(data)
   return true
 }

@@ -1,9 +1,11 @@
 import Link from "next/link"
-import { seriesList } from "@/data/podcasts"
+import { getSeriesList } from "@/data/podcasts"
 
 export const dynamic = "force-dynamic"
 
-export default function SeriesPage() {
+export default async function SeriesPage() {
+  const seriesList = await getSeriesList()
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-white mb-2">Series</h1>

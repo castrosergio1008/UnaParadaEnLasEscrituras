@@ -1,10 +1,12 @@
 import Link from "next/link"
-import { seriesList } from "@/data/podcasts"
+import { getSeriesList } from "@/data/podcasts"
 import Player from "@/components/Player"
 
 export const dynamic = "force-dynamic"
 
-export default function Home() {
+export default async function Home() {
+  const seriesList = await getSeriesList()
+
   const allEpisodes = seriesList
     .flatMap((s) => s.episodes.map((e) => ({ ...e, seriesTitle: s.title, seriesId: s.id })))
     .sort((a, b) => b.date.localeCompare(a.date))
